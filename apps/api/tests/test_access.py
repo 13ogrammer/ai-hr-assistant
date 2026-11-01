@@ -6,7 +6,7 @@ def test_unlisted_doc_defaults_to_internal():
 
 
 def test_listed_docs_get_their_configured_level():
-    assert access_level_for_doc("11_EXECUTIVE_COMPENSATION_CONFIDENTIAL.md") == "restricted"
+    assert access_level_for_doc("11_CEO_EMPLOYMENT_CONTRACT_RESTRICTED.md") == "restricted"
     assert access_level_for_doc("12_MANAGER_COMPENSATION_CALIBRATION_GUIDE.md") == "confidential"
 
 

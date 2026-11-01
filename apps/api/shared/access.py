@@ -18,7 +18,7 @@ ACCESS_LEVELS = {
 # the corpus is ordinary company-wide policy, so only the exceptions need
 # naming.
 DOC_ACCESS_LEVELS = {
-    "11_EXECUTIVE_COMPENSATION_CONFIDENTIAL.md": "restricted",
+    "11_CEO_EMPLOYMENT_CONTRACT_RESTRICTED.md": "restricted",
     "12_MANAGER_COMPENSATION_CALIBRATION_GUIDE.md": "confidential",
 }
 

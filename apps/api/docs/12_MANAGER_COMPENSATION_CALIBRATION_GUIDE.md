@@ -15,15 +15,9 @@ This guide helps people managers run the annual compensation calibration round d
 
 ## 2. Department Salary Increase Pools (FY2027)
 
-| Department | Headcount | Increase Pool (% of payroll) | Increase Pool ($) |
-|---|---|---|---|
-| Consulting & Advisory | 80 | 3.2% | $410,000 |
-| Technology Solutions | 65 | 3.8% | $395,000 |
-| Client Success | 45 | 2.9% | $198,000 |
-| Finance & Administration | 35 | 2.5% | $122,000 |
-| Operations | 10 | 2.5% | $34,000 |
+Finance has confirmed the following increase pools ahead of this year's calibration round. Consulting & Advisory (80 heads) has been allocated 3.2% of payroll, around $410,000 in total. Technology Solutions (65 heads) has the largest pool proportionally at 3.8%, roughly $395,000. Client Success (45 heads) is allocated 2.9%, approximately $198,000, while Finance & Administration (35 heads) and Operations (10 heads) are each allocated 2.5% of payroll, around $122,000 and $34,000 respectively.
 
-These pools are set by Finance before calibration begins and are not to be shared with direct reports. Employees should only ever be told the outcome for their own role, never the department-wide pool.
+These figures are set by Finance before calibration begins and are not to be shared with direct reports. Employees should only ever be told the outcome for their own role, never the department-wide pool.
 
 ---
 
