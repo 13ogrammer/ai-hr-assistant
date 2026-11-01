@@ -17,3 +17,8 @@ wheels/
 
 # Node
 node_modules/
+
+# Impeccable: machine/session-local cache, not shared project state.
+# .impeccable/surfaces/ (direction contracts) and config.json are kept.
+.impeccable/*.cache.json
+.impeccable/config.local.json

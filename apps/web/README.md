@@ -1,16 +1,24 @@
-# React + Vite
+# HR Assistant - Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A Vite + React chat UI for asking HR policy questions, structured like ChatGPT (conversation history, bottom-anchored composer) but with its own palette and type. Design decisions are documented in the root [DESIGN.md](../../DESIGN.md) and [.impeccable/surfaces/apps-web-src-app-jsx.md](../../.impeccable/surfaces/apps-web-src-app-jsx.md).
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Requires Node.js and npm.
 
-## React Compiler
+```bash
+npm install
+npm run dev
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Runs at `http://localhost:5173`. Requires [apps/api](../api) to be running on `http://localhost:8000` - the app calls its `/ask` endpoint directly, and the API's CORS config only allows `http://localhost:5173` as an origin.
 
-## Expanding the Oxlint configuration
+To run both apps together with one command, use the root-level `npm run dev` instead (see the [repo root README](../../README.md)).
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Build
+
+```bash
+npm run build
+```
+
+Outputs to `dist/`.
