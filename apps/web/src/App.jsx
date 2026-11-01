@@ -24,6 +24,12 @@ function App() {
     const trimmed = question.trim()
     if (!trimmed || loading) return
 
+    if (trimmed === '/clear') {
+      setMessages([])
+      setQuestion('')
+      return
+    }
+
     setMessages((prev) => [...prev, { id: makeId(), role: 'user', content: trimmed }])
     setQuestion('')
     setLoading(true)
