@@ -1,9 +1,9 @@
-from dotenv import load_dotenv
 from fastapi import FastAPI
 
-load_dotenv()
+from api.routes import router
 
 app = FastAPI()
+app.include_router(router)
 
 
 @app.get("/health")
