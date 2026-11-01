@@ -20,3 +20,10 @@ dependencies = [
 dev = [
     "pytest>=9.2.0",
 ]
+
+[tool.ruff.lint.isort]
+# Without this, ruff's first-party/third-party import classification depends
+# on its current working directory, not just the nearest pyproject.toml - so
+# the VS Code extension (cwd = the monorepo root, not apps/api) can't tell
+# these are local packages and mis-sorts every import block.
+known-first-party = ["api", "generation", "ingestion", "models", "retrieval", "shared"]
