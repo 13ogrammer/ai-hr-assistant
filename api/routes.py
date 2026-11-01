@@ -7,6 +7,11 @@ from retrieval.retrieve import retrieve
 router = APIRouter()
 
 
+@router.get("/health")
+def health_check():
+    return {"status": "healthy"}
+
+
 @router.post("/ask", response_model=AskResponse)
 def ask(request: AskRequest) -> AskResponse:
     chunks = retrieve(request.question)
