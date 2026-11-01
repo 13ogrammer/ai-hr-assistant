@@ -25,7 +25,9 @@ def ensure_schema(conn: psycopg.Connection) -> None:
             source TEXT NOT NULL,
             chunk_index INTEGER NOT NULL,
             content TEXT NOT NULL,
-            embedding VECTOR({EMBEDDING_DIM}) NOT NULL
+            embedding VECTOR({EMBEDDING_DIM}) NOT NULL,
+            access_level TEXT NOT NULL,
+            allowed_roles TEXT[] NOT NULL
         )
         """
     )

@@ -6,6 +6,7 @@ Run with: uv run python -m ingestion.ingest
 import pathlib
 import re
 
+from shared.access import access_level_for_doc, allowed_roles_for_level
 from shared.db import ensure_schema, get_connection
 from shared.embeddings import get_embedding_model
 
@@ -90,15 +91,18 @@ def main() -> None:
         chunks = chunk_text(text)
         embeddings = model.passage_embed(chunks)
 
+        access_level = access_level_for_doc(doc_path.name)
+        allowed_roles = allowed_roles_for_level(access_level)
+
         for index, (content, embedding) in enumerate(zip(chunks, embeddings)):
             conn.execute(
                 """
-                INSERT INTO chunks (source, chunk_index, content, embedding)
-                VALUES (%s, %s, %s, %s)
+                INSERT INTO chunks (source, chunk_index, content, embedding, access_level, allowed_roles)
+                VALUES (%s, %s, %s, %s, %s, %s)
                 """,
-                (doc_path.name, index, content, embedding),
+                (doc_path.name, index, content, embedding, access_level, allowed_roles),
             )
-        print(f"{doc_path.name}: {len(chunks)} chunks")
+        print(f"{doc_path.name}: {len(chunks)} chunks ({access_level})")
 
     conn.commit()
     conn.close()

@@ -41,8 +41,9 @@ def generate_answer(question: str, chunks: list[RetrievedChunk]) -> str:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        sys.exit('Usage: uv run python -m generation.generate "your question here"')
-    question = " ".join(sys.argv[1:])
-    chunks = retrieve(question)
+    if len(sys.argv) < 3:
+        sys.exit('Usage: uv run python -m generation.generate <role> "your question here"')
+    role = sys.argv[1]
+    question = " ".join(sys.argv[2:])
+    chunks = retrieve(question, role)
     print(generate_answer(question, chunks))

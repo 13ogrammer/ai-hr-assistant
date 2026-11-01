@@ -6,6 +6,44 @@
   margin: 0 auto;
 }
 
+.session {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.session label {
+  flex-shrink: 0;
+}
+
+.session select {
+  flex: 1;
+  min-width: 0;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.85rem;
+  font-family: inherit;
+  color: var(--text-h);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+}
+
+.session-role {
+  flex-shrink: 0;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
 .history {
   flex: 1;
   overflow-y: auto;
@@ -186,6 +224,12 @@
 }
 
 @media (max-width: 480px) {
+  .session {
+    padding: 0.6rem 1rem;
+  }
+  .session label {
+    display: none;
+  }
   .history {
     padding: 1rem 1rem 0;
   }

@@ -110,6 +110,16 @@ This folder contains all official HR policies, procedures, and employee document
 
 ---
 
+### Confidential and Restricted Documents
+
+**[11_EXECUTIVE_COMPENSATION_CONFIDENTIAL.md](11_EXECUTIVE_COMPENSATION_CONFIDENTIAL.md)** - *RESTRICTED (HR only)*
+- Named executive base salaries, bonus targets, and equity
+
+**[12_MANAGER_COMPENSATION_CALIBRATION_GUIDE.md](12_MANAGER_COMPENSATION_CALIBRATION_GUIDE.md)** - *CONFIDENTIAL (manager and HR)*
+- Department salary increase pools and calibration process
+
+---
+
 ### Health and Safety
 
 **[09_OCCUPATIONAL_HEALTH_SAFETY_POLICY.md](09_OCCUPATIONAL_HEALTH_SAFETY_POLICY.md)**

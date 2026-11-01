@@ -13,11 +13,23 @@ function App() {
   const [question, setQuestion] = useState('')
   const [messages, setMessages] = useState([])
   const [loading, setLoading] = useState(false)
+  const [users, setUsers] = useState([])
+  const [userId, setUserId] = useState('')
   const bottomRef = useRef(null)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
   }, [messages, loading])
+
+  useEffect(() => {
+    fetch(`${API_URL}/users`)
+      .then((response) => response.json())
+      .then((data) => {
+        setUsers(data)
+        setUserId((current) => current || data[0]?.id || '')
+      })
+      .catch(() => setUsers([]))
+  }, [])
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -38,7 +50,7 @@ function App() {
       const response = await fetch(`${API_URL}/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: trimmed }),
+        body: JSON.stringify({ question: trimmed, user_id: userId }),
       })
 
       if (!response.ok) {
@@ -60,8 +72,27 @@ function App() {
 
   const isEmpty = messages.length === 0
 
+  const currentUser = users.find((user) => user.id === userId)
+
   return (
     <div className="chat">
+      <div className="session">
+        <label htmlFor="user-select">Asking as</label>
+        <select
+          id="user-select"
+          value={userId}
+          onChange={(event) => setUserId(event.target.value)}
+          disabled={loading || users.length === 0}
+        >
+          {users.map((user) => (
+            <option key={user.id} value={user.id}>
+              {user.name} - {user.title}
+            </option>
+          ))}
+        </select>
+        {currentUser && <span className="session-role">{currentUser.role}</span>}
+      </div>
+
       <div className={`history ${isEmpty ? 'history--empty' : ''}`}>
         {isEmpty ? (
           <div className="prompt">

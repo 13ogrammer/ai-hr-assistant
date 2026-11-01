@@ -4,8 +4,12 @@ from generation.generate import build_prompt, generate_answer
 from models.chunk import RetrievedChunk
 
 
-def make_chunk(source="policy.md", chunk_index=0, content="Some policy text.", distance=0.1):
-    return RetrievedChunk(source=source, chunk_index=chunk_index, content=content, distance=distance)
+def make_chunk(
+    source="policy.md", chunk_index=0, content="Some policy text.", distance=0.1, access_level="internal"
+):
+    return RetrievedChunk(
+        source=source, chunk_index=chunk_index, content=content, distance=distance, access_level=access_level
+    )
 
 
 def test_build_prompt_includes_the_question():

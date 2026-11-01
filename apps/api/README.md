@@ -1,8 +1,10 @@
 # HR Assistant - API
 
-A naive end-to-end RAG pipeline answering HR policy questions for a fictional company (`docs/`): chunk the policy documents, embed them locally, store them in Postgres/pgvector, retrieve the most relevant chunks for a question, and ask an LLM to answer from them.
+An end-to-end RAG pipeline answering HR policy questions for a fictional company (`docs/`): chunk the policy documents, embed them locally, store them in Postgres/pgvector, retrieve the most relevant chunks for a question - filtered by the asker's role - and ask an LLM to answer from them.
 
-No access control, no citation verification, no relevance threshold yet - deliberately naive as a first build-plan chapter, not an oversight.
+**Access control (Chapter 2):** every chunk is tagged at ingestion with an `access_level` (`public`/`internal`/`confidential`/`restricted`) and the roles it maps to (`shared/access.py`). `retrieve()` applies this as a SQL `WHERE role = ANY(allowed_roles)` filter, so a restricted chunk is never fetched for a role that can't see it - it never reaches the model, regardless of how the question is phrased. There's no real login yet: `shared/users.py` is a small fake user directory, and the caller sends a `user_id` that the API resolves to a role server-side (never a role sent directly by the client).
+
+No citation verification, no relevance threshold yet - deliberately naive beyond chapter 2's scope, not an oversight.
 
 ## Setup
 
@@ -25,6 +27,7 @@ Requires Python 3.12+, [uv](https://docs.astral.sh/uv/), and Docker.
    ```bash
    uv run python -m ingestion.ingest
    ```
+   If you're upgrading from before Chapter 2, the `chunks` table needs the new `access_level`/`allowed_roles` columns - drop it first (`DROP TABLE chunks;` via `psql` or `docker compose exec db psql -U hr_assistant -d hr_assistant`) and re-run ingestion; it's fully reproducible from `docs/`.
 
 ## Run
 
@@ -33,7 +36,8 @@ uv run uvicorn main:app --reload --port 8000
 ```
 
 - `GET /health` - liveness check.
-- `POST /ask` - `{"question": "..."}` in, `{"answer": "...", "sources": ["..."]}` out.
+- `GET /users` - the fake user directory (`id`, `name`, `title`, `role`) for the UI's "asking as" selector.
+- `POST /ask` - `{"question": "...", "user_id": "..."}` in, `{"answer": "...", "sources": ["..."]}` out. `user_id` must match one of `/users`.
 
 CORS is configured to allow requests from `http://localhost:5173` (the `apps/web` dev server) only.
 
