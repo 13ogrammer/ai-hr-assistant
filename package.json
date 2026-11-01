@@ -1,0 +1,10 @@
+{
+  "name": "hr-assistant",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,green \"cd apps/api && uv run uvicorn main:app --reload --port 8000\" \"cd apps/web && npm run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  }
+}

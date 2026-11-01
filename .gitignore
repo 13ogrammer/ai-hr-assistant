@@ -14,3 +14,6 @@ wheels/
 
 # Linter
 .ruff_cache/
+
+# Node
+node_modules/
