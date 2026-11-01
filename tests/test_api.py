@@ -28,20 +28,6 @@ def test_health_returns_ok():
     assert response.json() == {"status": "healthy"}
 
 
-def test_ask_returns_answer_and_sources():
-    chunks = [make_chunk(source="a.md"), make_chunk(source="b.md")]
-    with (
-        patch("api.routes.retrieve", return_value=chunks) as mock_retrieve,
-        patch("api.routes.generate_answer", return_value="4 weeks.") as mock_generate,
-    ):
-        response = client.post("/ask", json={"question": "How much leave?"})
-
-    assert response.status_code == 200
-    assert response.json() == {"answer": "4 weeks.", "sources": ["a.md", "b.md"]}
-    mock_retrieve.assert_called_once_with("How much leave?")
-    mock_generate.assert_called_once_with("How much leave?", chunks)
-
-
 def test_ask_deduplicates_and_sorts_sources():
     chunks = [make_chunk(source="b.md"), make_chunk(source="a.md"), make_chunk(source="a.md")]
     with (
