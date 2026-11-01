@@ -1,3 +1,5 @@
+name: hr-assistant
+
 services:
   db:
     image: pgvector/pgvector:pg16
