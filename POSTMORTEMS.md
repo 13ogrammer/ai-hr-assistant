@@ -1,4 +1,8 @@
-# Chapter 2: Someone Asks for the Boss's Salary
+# Postmortems
+
+A short writeup after each build-plan chapter: what broke, why, what changed. See [PLAN.md](PLAN.md) for the chapter roadmap and [TODO.md](TODO.md) for unfixed gaps found along the way.
+
+## Chapter 2: Someone Asks for the Boss's Salary
 
 **What broke:** The Chapter 1 pipeline does pure similarity search over every chunk in the table. There was nothing in the corpus worth leaking yet, so the problem was latent - added `11_EXECUTIVE_COMPENSATION_CONFIDENTIAL.md` (named exec salaries) and `12_MANAGER_COMPENSATION_CALIBRATION_GUIDE.md` (department raise pools) to make it concrete. Before the fix, any role asking "what does the CEO earn?" would get the real figure back, because the retriever only knows semantic similarity, not who's asking.
 
