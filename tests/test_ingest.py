@@ -45,3 +45,49 @@ def test_all_original_content_is_preserved_across_chunks():
     rejoined = "\n\n".join(chunks)
     for paragraph in paragraphs:
         assert paragraph.strip() in rejoined
+
+
+def test_sections_under_different_headings_are_not_merged():
+    # Even though combined they're well under max_chars, two unrelated
+    # sections should never end up smeared into the same chunk.
+    text = "## Section A\n\nShort content A.\n\n## Section B\n\nShort content B."
+    chunks = chunk_text(text, max_chars=1000)
+    assert chunks == ["## Section A\n\nShort content A.", "## Section B\n\nShort content B."]
+
+
+def test_content_before_first_heading_is_its_own_section():
+    text = "Intro paragraph before any heading.\n\n## Section A\n\nContent A."
+    chunks = chunk_text(text, max_chars=1000)
+    assert chunks == ["Intro paragraph before any heading.", "## Section A\n\nContent A."]
+
+
+def test_paragraphs_within_one_section_are_still_grouped_together():
+    text = "## Section A\n\nFirst paragraph.\n\nSecond paragraph."
+    chunks = chunk_text(text, max_chars=1000)
+    assert chunks == ["## Section A\n\nFirst paragraph.\n\nSecond paragraph."]
+
+
+def test_nested_heading_levels_each_start_a_new_section():
+    text = "## Parent\n\nParent content.\n\n### Child\n\nChild content."
+    chunks = chunk_text(text, max_chars=1000)
+    assert chunks == ["## Parent\n\nParent content.", "### Child\n\nChild content."]
+
+
+def test_bare_heading_with_no_body_is_folded_into_next_section():
+    # A heading immediately followed by a subheading (no content of its own)
+    # must not become a standalone chunk containing only a section title.
+    text = "## 5. Taking Leave\n\n### 5.1 Access and Timing\n\nContent here."
+    chunks = chunk_text(text, max_chars=1000)
+    assert chunks == ["## 5. Taking Leave\n\n### 5.1 Access and Timing\n\nContent here."]
+
+
+def test_multiple_consecutive_bare_headings_are_all_folded_forward():
+    text = "## A\n\n### B\n\n#### C\n\nActual content."
+    chunks = chunk_text(text, max_chars=1000)
+    assert chunks == ["## A\n\n### B\n\n#### C\n\nActual content."]
+
+
+def test_trailing_bare_heading_with_nothing_after_it_is_kept_as_is():
+    text = "## Section A\n\nSome real content here.\n\n## Trailing Heading"
+    chunks = chunk_text(text, max_chars=1000)
+    assert chunks == ["## Section A\n\nSome real content here.", "## Trailing Heading"]
