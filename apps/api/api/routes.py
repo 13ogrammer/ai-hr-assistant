@@ -20,6 +20,6 @@ def ask(request: AskRequest) -> AskResponse:
         raise HTTPException(status_code=400, detail="Unknown user_id")
 
     chunks = retrieve(request.question, user.role)
-    answer = generate_answer(request.question, chunks)
+    answer = generate_answer(request.question, chunks, user)
     sources = sorted({chunk.source for chunk in chunks})
     return AskResponse(answer=answer, sources=sources)

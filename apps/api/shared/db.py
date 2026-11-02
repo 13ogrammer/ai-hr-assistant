@@ -32,3 +32,18 @@ def ensure_schema(conn: psycopg.Connection) -> None:
         """
     )
     conn.commit()
+
+
+def ensure_employees_schema(conn: psycopg.Connection) -> None:
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS employees (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            manager_name TEXT,
+            salary INTEGER NOT NULL,
+            leave_balance_days DOUBLE PRECISION NOT NULL
+        )
+        """
+    )
+    conn.commit()

@@ -58,6 +58,18 @@ def test_ask_passes_the_resolved_role_to_retrieve_not_the_raw_user_id():
     mock_retrieve.assert_called_once_with("question", "manager")
 
 
+def test_ask_passes_the_resolved_user_to_generate_answer():
+    with (
+        patch("api.routes.retrieve", return_value=[]),
+        patch("api.routes.generate_answer", return_value="answer") as mock_generate,
+    ):
+        client.post("/ask", json={"question": "question", "user_id": "maya.chen"})
+
+    args, _ = mock_generate.call_args
+    assert args[0] == "question"
+    assert args[2].id == "maya.chen"
+
+
 def test_ask_rejects_unknown_user_id():
     response = client.post("/ask", json={"question": "question", "user_id": "not.a.real.user"})
     assert response.status_code == 400
