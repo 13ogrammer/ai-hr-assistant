@@ -22,6 +22,7 @@ from shared.db import get_connection
 class EmployeeRecord:
     id: str
     name: str
+    title: str
     manager_name: str | None
     salary: int
     leave_balance_days: float
@@ -30,7 +31,7 @@ class EmployeeRecord:
 def get_employee(employee_id: str) -> EmployeeRecord | None:
     conn = get_connection()
     row = conn.execute(
-        "SELECT id, name, manager_name, salary, leave_balance_days FROM employees WHERE id = %s",
+        "SELECT id, name, title, manager_name, salary, leave_balance_days FROM employees WHERE id = %s",
         (employee_id,),
     ).fetchone()
     conn.close()
@@ -40,7 +41,7 @@ def get_employee(employee_id: str) -> EmployeeRecord | None:
 def list_employees() -> list[EmployeeRecord]:
     conn = get_connection()
     rows = conn.execute(
-        "SELECT id, name, manager_name, salary, leave_balance_days FROM employees ORDER BY id"
+        "SELECT id, name, title, manager_name, salary, leave_balance_days FROM employees ORDER BY id"
     ).fetchall()
     conn.close()
     return [EmployeeRecord(*row) for row in rows]

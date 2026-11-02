@@ -22,4 +22,4 @@ The web UI's visual system is documented in [DESIGN.md](DESIGN.md); product cont
 
 ## Build plan progress
 
-This project follows the staged build plan in [PLAN.md](PLAN.md), one chapter at a time. **Chapters 1 (the naive end-to-end pipeline), 2 (role-based access control at retrieval time), and 3 (structured data behind tools) are complete.** Chapter 4 (a query router for questions that need both a tool and a document) is next. Concrete gaps found but not yet fixed are tracked in [TODO.md](TODO.md).
+This project follows the staged build plan in [PLAN.md](PLAN.md), one chapter at a time. **Chapters 1 (the naive end-to-end pipeline), 2 (role-based access control at retrieval time), 3 (structured data behind tools), and 4 (an agent loop that routes between tools and document search) are complete.** Chapter 5 (data minimisation and PII handling before sending to an external model) is next. Concrete gaps found but not yet fixed are tracked in [TODO.md](TODO.md).

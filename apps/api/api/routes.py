@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException
 
 from generation.generate import generate_answer
 from models.qa import AskRequest, AskResponse, UserResponse
-from retrieval.retrieve import retrieve
 from shared.users import FAKE_USERS, get_user
 
 router = APIRouter()
@@ -19,7 +18,5 @@ def ask(request: AskRequest) -> AskResponse:
     if user is None:
         raise HTTPException(status_code=400, detail="Unknown user_id")
 
-    chunks = retrieve(request.question, user.role)
-    answer = generate_answer(request.question, chunks, user)
-    sources = sorted({chunk.source for chunk in chunks})
+    answer, sources = generate_answer(request.question, user)
     return AskResponse(answer=answer, sources=sources)

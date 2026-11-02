@@ -34,6 +34,14 @@ def test_salary_and_leave_balance_are_positive():
         assert employee.leave_balance_days >= 0
 
 
+def test_every_employee_has_a_title():
+    # The roster built from this is how the model resolves a reference like
+    # "the CEO" to an employee id - without a title, that reference is
+    # unresolvable and the question silently fails with "I don't know".
+    for employee in list_employees():
+        assert employee.title
+
+
 def test_get_salary_returns_the_resolved_employees_salary():
     result = get_salary(priya, "tom.richards")
     assert result["employee_id"] == "tom.richards"

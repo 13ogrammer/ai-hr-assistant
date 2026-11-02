@@ -1,11 +1,11 @@
 """Tests for the HTTP layer only.
 
 /ask depends on a live DB, a loaded embedding model, and a real (paid)
-OpenAI call - none of that belongs in these tests. retrieve() and
-generate_answer() are mocked so these tests check what this layer
-actually owns: request validation, response shape, and correct wiring.
-The real pipeline is covered by tests/test_retrieve.py (real DB) and
-manual verification against the real OpenAI API.
+OpenAI call - none of that belongs in these tests. generate_answer() is
+mocked so these tests check what this layer actually owns: request
+validation, response shape, and correct wiring. The real pipeline is
+covered by tests/test_retrieve.py (real DB) and manual verification
+against the real OpenAI API.
 """
 
 from unittest.mock import patch
@@ -13,15 +13,8 @@ from unittest.mock import patch
 from fastapi.testclient import TestClient
 
 from main import app
-from models.chunk import RetrievedChunk
 
 client = TestClient(app)
-
-
-def make_chunk(source="policy.md", chunk_index=0, content="text", distance=0.1, access_level="internal"):
-    return RetrievedChunk(
-        source=source, chunk_index=chunk_index, content=content, distance=distance, access_level=access_level
-    )
 
 
 def test_health_returns_ok():
@@ -37,37 +30,21 @@ def test_list_users_returns_the_fake_directory():
     assert roles == {"employee", "manager", "hr"}
 
 
-def test_ask_deduplicates_and_sorts_sources():
-    chunks = [make_chunk(source="b.md"), make_chunk(source="a.md"), make_chunk(source="a.md")]
-    with (
-        patch("api.routes.retrieve", return_value=chunks),
-        patch("api.routes.generate_answer", return_value="answer"),
-    ):
+def test_ask_passes_through_the_answer_and_sources_from_generate_answer():
+    with patch("api.routes.generate_answer", return_value=("answer", ["a.md", "b.md"])):
         response = client.post("/ask", json={"question": "question", "user_id": "maya.chen"})
 
-    assert response.json()["sources"] == ["a.md", "b.md"]
-
-
-def test_ask_passes_the_resolved_role_to_retrieve_not_the_raw_user_id():
-    with (
-        patch("api.routes.retrieve", return_value=[]) as mock_retrieve,
-        patch("api.routes.generate_answer", return_value="answer"),
-    ):
-        client.post("/ask", json={"question": "question", "user_id": "tom.richards"})
-
-    mock_retrieve.assert_called_once_with("question", "manager")
+    assert response.json() == {"answer": "answer", "sources": ["a.md", "b.md"]}
 
 
 def test_ask_passes_the_resolved_user_to_generate_answer():
-    with (
-        patch("api.routes.retrieve", return_value=[]),
-        patch("api.routes.generate_answer", return_value="answer") as mock_generate,
-    ):
-        client.post("/ask", json={"question": "question", "user_id": "maya.chen"})
+    with patch("api.routes.generate_answer", return_value=("answer", [])) as mock_generate:
+        client.post("/ask", json={"question": "question", "user_id": "tom.richards"})
 
     args, _ = mock_generate.call_args
     assert args[0] == "question"
-    assert args[2].id == "maya.chen"
+    assert args[1].id == "tom.richards"
+    assert args[1].role == "manager"
 
 
 def test_ask_rejects_unknown_user_id():

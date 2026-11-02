@@ -40,10 +40,15 @@ def ensure_employees_schema(conn: psycopg.Connection) -> None:
         CREATE TABLE IF NOT EXISTS employees (
             id TEXT PRIMARY KEY,
             name TEXT NOT NULL,
+            title TEXT NOT NULL DEFAULT '',
             manager_name TEXT,
             salary INTEGER NOT NULL,
             leave_balance_days DOUBLE PRECISION NOT NULL
         )
         """
     )
+    # ADD COLUMN IF NOT EXISTS so a table created before `title` existed still
+    # picks it up - no migration framework yet, so this is the simplest way
+    # ensure_employees_schema stays idempotent for an already-running DB.
+    conn.execute("ALTER TABLE employees ADD COLUMN IF NOT EXISTS title TEXT NOT NULL DEFAULT ''")
     conn.commit()

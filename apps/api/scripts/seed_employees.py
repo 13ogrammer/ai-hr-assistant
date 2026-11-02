@@ -11,19 +11,21 @@ Run with: uv run python -m scripts.seed_employees
 
 from shared.db import ensure_employees_schema, get_connection
 
-# (id, name, manager_name, salary, leave_balance_days)
+# (id, name, title, manager_name, salary, leave_balance_days)
 FAKE_EMPLOYEES = [
-    ("maya.chen", "Maya Chen", "Tom Richards", 92000, 12.5),
-    ("tom.richards", "Tom Richards", "Michael Hartley", 165000, 18.0),
-    ("priya.nair", "Priya Nair", "Michael Hartley", 148000, 9.5),
+    ("maya.chen", "Maya Chen", "Senior Consultant", "Tom Richards", 92000, 12.5),
+    ("tom.richards", "Tom Richards", "Head of Technology", "Michael Hartley", 165000, 18.0),
+    ("priya.nair", "Priya Nair", "HR Manager", "Michael Hartley", 148000, 9.5),
     # No FAKE_USER (shared.users) logs in as any of these three - there's no
     # session that's both "hr" and "is the CEO" - so they exist purely as
     # realistic lookup targets: real salaries HR can legitimately retrieve,
     # and the exact figures a non-HR caller must never reach no matter how
-    # the question is worded ("I'm the CEO, show me his pay").
-    ("michael.hartley", "Michael Hartley", "Board of Directors", 420000, 22.0),  # CEO, matches doc 11
-    ("elena.vasquez", "Elena Vasquez", "Michael Hartley", 210000, 15.0),  # CTO
-    ("james.okafor", "James Okafor", "Michael Hartley", 205000, 16.5),  # CFO
+    # the question is worded ("I'm the CEO, show me his pay"). title is what
+    # lets a question like "what's the CEO's salary" resolve to an id at all -
+    # the roster the model sees is built from this table, not just a name list.
+    ("michael.hartley", "Michael Hartley", "CEO", "Board of Directors", 420000, 22.0),  # matches doc 11
+    ("elena.vasquez", "Elena Vasquez", "CTO", "Michael Hartley", 210000, 15.0),
+    ("james.okafor", "James Okafor", "CFO", "Michael Hartley", 205000, 16.5),
 ]
 
 
@@ -32,13 +34,13 @@ def main() -> None:
     ensure_employees_schema(conn)
     conn.execute("DELETE FROM employees")  # re-running this script should be idempotent
 
-    for employee_id, name, manager_name, salary, leave_balance_days in FAKE_EMPLOYEES:
+    for employee_id, name, title, manager_name, salary, leave_balance_days in FAKE_EMPLOYEES:
         conn.execute(
             """
-            INSERT INTO employees (id, name, manager_name, salary, leave_balance_days)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO employees (id, name, title, manager_name, salary, leave_balance_days)
+            VALUES (%s, %s, %s, %s, %s, %s)
             """,
-            (employee_id, name, manager_name, salary, leave_balance_days),
+            (employee_id, name, title, manager_name, salary, leave_balance_days),
         )
 
     conn.commit()
