@@ -1,0 +1,44 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug generate.py",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "generation.generate",
+      "cwd": "${workspaceFolder}/apps/api",
+      "envFile": "${workspaceFolder}/apps/api/.env",
+      "args": ["maya.chen", "How much leave do I have?"],
+      "justMyCode": true
+    },
+    {
+      "name": "Debug show_outbound_payload.py",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "scripts.show_outbound_payload",
+      "cwd": "${workspaceFolder}/apps/api",
+      "envFile": "${workspaceFolder}/apps/api/.env",
+      "args": ["maya.chen", "How much leave do I have?"],
+      "justMyCode": true
+    },
+    {
+      "name": "Debug eval_router.py",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "scripts.eval_router",
+      "cwd": "${workspaceFolder}/apps/api",
+      "envFile": "${workspaceFolder}/apps/api/.env",
+      "justMyCode": true
+    },
+    {
+      "name": "Debug retrieve.py",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "retrieval.retrieve",
+      "cwd": "${workspaceFolder}/apps/api",
+      "envFile": "${workspaceFolder}/apps/api/.env",
+      "args": ["employee", "How much leave do I get?"],
+      "justMyCode": true
+    }
+  ]
+}

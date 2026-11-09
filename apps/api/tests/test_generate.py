@@ -5,9 +5,11 @@ system prompt's employee roster), are both mocked - these should run with no
 real API key, network access, or database.
 """
 
+import json
 from unittest.mock import MagicMock, patch
 
 from generation.generate import MAX_TOOL_ITERATIONS, build_system_prompt, generate_answer
+from generation.tokenization import TokenMap
 from shared.employees import EmployeeRecord
 from shared.users import get_user
 
@@ -47,12 +49,36 @@ def make_tool_call(call_id="call_1", function_name="get_salary", arguments='{"em
     return tool_call
 
 
-def test_build_system_prompt_names_the_asker_and_lists_the_roster():
+def test_build_system_prompt_anonymizes_everyone_not_named_in_the_question():
+    token_map = TokenMap()
     with patch("generation.generate.list_employees", return_value=FAKE_EMPLOYEES):
-        prompt = build_system_prompt(maya)
-    assert "Maya Chen" in prompt
-    assert "maya.chen" in prompt
-    assert "tom.richards: Tom Richards (Head of Technology)" in prompt
+        prompt = build_system_prompt(maya, token_map, "What's my leave balance?")
+
+    assert "Maya Chen" not in prompt
+    assert "Tom Richards" not in prompt
+    assert "maya.chen" not in prompt
+    assert "tom.richards" not in prompt
+    assert "Senior Consultant" in prompt
+    assert "Head of Technology" in prompt
+
+
+def test_build_system_prompt_reveals_a_name_only_when_the_question_mentions_it():
+    token_map = TokenMap()
+    with patch("generation.generate.list_employees", return_value=FAKE_EMPLOYEES):
+        prompt = build_system_prompt(maya, token_map, "What is Tom Richards' salary?")
+
+    assert "Tom Richards" in prompt
+    assert "Maya Chen" not in prompt
+
+
+def test_build_system_prompt_uses_a_stable_token_for_the_same_employee():
+    token_map = TokenMap()
+    with patch("generation.generate.list_employees", return_value=FAKE_EMPLOYEES):
+        prompt = build_system_prompt(maya, token_map, "What is Tom Richards' salary?")
+
+    # Tom's roster-line token and his name-hint token must be the same token.
+    tom_roster_token = next(line.split(":")[0][2:] for line in prompt.splitlines() if "Head of Technology" in line)
+    assert f'"Tom Richards" -> {tom_roster_token}' in prompt
 
 
 def test_generate_answer_returns_the_model_response_and_no_sources_when_no_tool_is_needed():
@@ -113,7 +139,41 @@ def test_generate_answer_calls_the_tool_and_feeds_its_result_back_to_the_model()
     tool_message = second_call_messages[-1]
     assert tool_message["role"] == "tool"
     assert tool_message["tool_call_id"] == "call_1"
-    assert "92000" in tool_message["content"]
+    assert "92000" not in tool_message["content"]
+    assert "Maya Chen" not in tool_message["content"]
+    assert "maya.chen" not in tool_message["content"]
+
+
+def test_generate_answer_never_sends_the_real_salary_but_returns_it_in_the_answer():
+    """The model only ever sees a token for the real number - it writes its
+    answer using that token, and generate_answer swaps the real, formatted
+    value back in before returning. This is the actual privacy property."""
+    tool_call = make_tool_call()
+    first_response = MagicMock(choices=[MagicMock(message=make_message(tool_calls=[tool_call]))])
+    captured_messages = []
+
+    def capture_and_respond(*args, **kwargs):
+        captured_messages.append(kwargs["messages"])
+        if len(captured_messages) == 1:
+            return first_response
+        token = json.loads(kwargs["messages"][-1]["content"])["salary"]
+        return MagicMock(choices=[MagicMock(message=make_message(content=f"Your salary is {token}."))])
+
+    with (
+        patch("generation.generate.list_employees", return_value=FAKE_EMPLOYEES),
+        patch("generation.generate.OpenAI") as mock_openai_class,
+        patch(
+            "generation.generate.call_tool",
+            return_value=({"employee_id": "maya.chen", "name": "Maya Chen", "salary": 92000}, []),
+        ),
+    ):
+        mock_openai_class.return_value.chat.completions.create.side_effect = capture_and_respond
+        answer, _ = generate_answer("What's my salary?", maya)
+
+    everything_sent_to_the_model = json.dumps(captured_messages)
+    assert "92000" not in everything_sent_to_the_model
+    assert "92,000" not in everything_sent_to_the_model
+    assert answer == "Your salary is $92,000."
 
 
 def test_generate_answer_collects_sources_returned_by_a_search_tool_call():
